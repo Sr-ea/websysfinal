@@ -5,10 +5,10 @@ This plan outlines the systematic implementation of the e-commerce project. Ever
 ## Phase 1: Project Setup & Foundation
 - [x] Initialize project directories (`/client`, `/server`).
 - [x] Configure `pnpm` dependencies.
-- [ ] Create `.env` templates for both client and server.
-- [ ] Set up basic Express server.
-- [ ] Connect Backend to MongoDB.
-- [ ] Verify connectivity between Frontend and Backend.
+- [x] Create `.env` templates for both client and server.
+- [x] Set up basic Express server.
+- [x] Connect Backend to MongoDB.
+- [x] Verify connectivity between Frontend and Backend.
 
 ## Phase 2: Database Models & API Design
 - [ ] Create Mongoose Schemas (User, Product, Order).
