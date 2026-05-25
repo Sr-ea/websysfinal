@@ -1,42 +1,49 @@
-# Development Plan: E-Commerce Web System
-
-This plan outlines the systematic implementation of the e-commerce project. Every agent working on this repo MUST update this file when tasks are completed.
+# Development Plan: 7-Evelyn Fruit Market
 
 ## Phase 1: Project Setup & Foundation
-- [x] Initialize project directories (`/client`, `/server`).
-- [x] Configure `pnpm` dependencies.
-- [x] Create `.env` templates for both client and server.
-- [x] Set up basic Express server.
-- [x] Connect Backend to MongoDB.
-- [x] Verify connectivity between Frontend and Backend.
+- [x] Wipe old MERN stack (client/, server/).
+- [x] Install Python 3.12 + Django dependencies.
+- [x] Install Django 6.0 + Pillow.
+- [x] Scaffold Django project (`market`) and apps.
+- [x] Configure SQLite database.
+- [x] Create `.gitignore` for Python/Django.
 
-## Phase 2: Database Models & API Design
-- [ ] Create Mongoose Schemas (User, Product, Order).
-- [ ] Implement CRUD API for Products (Admin Access).
-- [ ] Implement User Registration and JWT Login logic.
-- [ ] Setup image upload handling (Local storage).
+## Phase 2: Database Models & Admin
+- [x] Create User model (extends AbstractUser with phone_number).
+- [x] Create Category model.
+- [x] Create Product model.
+- [x] Create Order + OrderItem models.
+- [x] Register all models with Django Admin.
+- [x] Seed database with 5 categories and 20 products (7-Evelyn inventory).
 
-## Phase 3: Frontend Shell & Navigation
-- [ ] Set up React Router for navigation.
-- [ ] Create layout components (Navbar, Footer).
-- [ ] Build the "Product Grid" view with mock data.
-- [ ] Implement Responsive Design shell with Vanilla CSS.
+## Phase 3: Templates & Frontend
+- [x] Create base template with nav bar.
+- [x] Build product grid catalog with search and category filters.
+- [x] Build product detail page.
+- [x] Build cart page (session-based).
+- [x] Build checkout page with shipping form.
+- [x] Build order history and order detail pages.
+- [x] Build auth pages (login, register).
+- [x] Build admin dashboard (overview, products, orders).
+- [x] Create fruit-market CSS design system.
 
 ## Phase 4: Core User Features
-- [ ] Integration: Fetch and display real products from API.
-- [ ] Implementation: Shopping Cart logic.
-- [ ] Feature: Product Search and Category filtering.
-- [ ] Feature: Checkout Simulation.
-- [ ] Feature: User Profile & Order History.
+- [x] Product Catalog with category filtering.
+- [x] Product search.
+- [x] Session-based shopping cart (add, update, remove).
+- [x] Checkout simulation (shipping info, order summary).
+- [x] Order history and detail view.
+- [x] User registration and login.
 
 ## Phase 5: Admin Panel
-- [ ] Create Admin-only dashboard route.
-- [ ] Implementation: Product Management UI (Add/Edit/Delete forms).
-- [ ] Implementation: Order Management UI (List orders + Status toggle).
-- [ ] Secure Admin routes with backend middleware.
+- [x] Dashboard overview (stats).
+- [x] Product management (CRUD with image upload).
+- [x] Order management (list all orders, update status).
+- [x] Django Admin interface at `/admin/`.
 
 ## Phase 6: Polishing & Validation
-- [ ] Client/Server form validation.
-- [ ] Final UI/UX pass: Loading states & Error handling.
-- [ ] Verify all rubrics (Functionality, UI/UX, Code Quality).
-- [ ] Prepare Documentation (PDF manual + screenshots).
+- [ ] Client/server form validation enhancements.
+- [ ] Final UI/UX pass: loading states & error handling.
+- [ ] Add product images (placeholder or actual uploads).
+- [ ] Responsive design verification.
+- [ ] Prepare documentation.

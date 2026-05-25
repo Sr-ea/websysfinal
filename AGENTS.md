@@ -1,114 +1,95 @@
 # Agent Entry Point
 
-All agents working on this project MUST read this file before performing any tasks. It contains the foundational mandates, technical specifications, and links to the current development plan. Refer to `DESIGN.md` for the design system (colors, typography, spacing, components).
+All agents working on this project MUST read this file before performing any tasks. It contains the foundational mandates, technical specifications, and links to the current development plan.
 
-# E-Commerce Web System - Project Specification (Source of Truth)
+# 7-Evelyn - Fruit Market Web System (Source of Truth)
 
 ## Project Overview
-A fully functional basic e-commerce website allowing users to browse products, manage a cart, and simulate checkout. Includes an admin panel for product and order management.
+A fully functional fruit & grocery market website — "7-Evelyn". Users can browse products, manage a cart, and place orders. Includes an admin panel for product and order management.
 
 ## Tech Stack
-- **Frontend:** React (TypeScript) with Vite
-- **Styling:** Vanilla CSS (Modern CSS features, no Tailwind unless requested)
-- **Backend:** Node.js with Express
-- **Database:** MongoDB
-- **Package Manager:** pnpm
-- **Authentication:** JWT (JSON Web Tokens)
-- **Image Storage:** Local storage (public/uploads) or Cloudinary
+- **Framework:** Django 6.0 (Python)
+- **Python Version:** 3.12
+- **Database:** SQLite
+- **Frontend:** Django Templates + Vanilla CSS
+- **Authentication:** Django's built-in auth (session-based)
+- **Cart:** Session-based (anonymous users can add to cart)
+- **Image Storage:** Local storage (`media/products/`)
+- **Admin Panel:** Django Admin + custom dashboard for staff
 
 ## Agent Directives & Engineering Standards
-*These rules are foundational mandates for all agents working on this repository.*
 
-### 1. Architectural Consistency
-- **Composition over Inheritance:** Prioritize explicit composition and delegation patterns. Avoid complex prototype manipulation or deep inheritance trees.
-- **Surgical Changes:** Minimize diff size by making targeted edits. Avoid unrelated refactoring or "cleanup" unless explicitly requested.
-- **Type Safety:** Maintain strict TypeScript typing. Do not use `any` or suppress linter/compiler warnings.
+### 1. Project Structure
+```
+websys_project/
+├── market/              # Django project settings
+├── accounts/            # User registration, login
+├── catalog/             # Products, categories, search
+├── cart/                # Session-based cart
+├── checkout/            # Order placement
+├── orders/              # Order history
+├── dashboard/           # Staff admin panel
+├── templates/           # HTML templates
+├── static/              # CSS, JS, images
+├── media/               # User uploads (product images)
+├── manage.py            # Django management script
+├── seed.py              # Database seeder
+└── requirements.txt
+```
 
-### 2. File Structure & Organization
-- **Separation of Concerns:** Keep business logic in the backend (`/server`) and UI/UX in the frontend (`/client`).
-- **Standardized Folders:**
-  - `client/src/components`: UI components.
-  - `client/src/pages`: Top-level page components.
-  - `server/models`: Mongoose schemas.
-  - `server/routes`: API endpoints.
-  - `server/controllers`: Request handlers.
-
-### 3. Workflow Mandates
+### 2. Workflow Mandates
 - **Research -> Strategy -> Execution:** Always validate assumptions before implementing.
-- **Validation:** Every change must be verified. Run relevant tests or verify manually via shell if tests aren't available yet.
-- **Development Roadmap:** All agents MUST read `DEVELOPMENT_PLAN.md` before beginning work. When a task is completed, the agent MUST update `DEVELOPMENT_PLAN.md` by marking the corresponding item as complete.
+- **Validation:** Every change must be verified. Run `python manage.py check` before committing.
+- **Development Roadmap:** Read `DEVELOPMENT_PLAN.md` before beginning work. Update it when tasks are completed.
 - **Documentation:** Update this file if the project architecture or tech stack changes.
-- **UI Component Library:** Use Redis as the data/store layer when building the UI component library.
 
 ## Core Features
 
 ### User Side (Customer)
-1.  **Authentication:** Register and Login.
-2.  **Product Catalog:**
-    *   View available products (Grid/List).
-    *   Search and filter (by category, price, etc.).
-    *   View detailed product information.
-3.  **Shopping Cart:**
-    *   Add items to cart.
-    *   Update quantities or remove items.
-    *   Persistent cart (via database or localStorage).
-4.  **Checkout:**
-    *   Checkout simulation (shipping info, order summary).
-    *   *Note: Payment integration is NOT required.*
-5.  **Order History:** View status and history of previous orders.
+1. **Authentication:** Register and Login (Django built-in auth).
+2. **Product Catalog:** Grid view, search, filter by category, product detail.
+3. **Shopping Cart:** Session-based, add/update/remove items.
+4. **Checkout:** Shipping info form, order summary, order placement.
+5. **Order History:** View past orders with status (Pending/Shipped/Completed).
 
-### Admin Side
-1.  **Admin Login:** Secure authentication for admin users.
-2.  **Product Management (CRUD):**
-    *   Create, Read, Update, Delete products.
-    *   Upload product images.
-    *   Manage categories.
-3.  **Order Management:**
-    *   View all customer orders.
-    *   Update order status (Pending, Completed, Shipped).
+### Admin Side (Staff)
+1. **Dashboard:** Overview stats (products, orders, pending).
+2. **Product Management (CRUD):** Add, edit, delete products with image upload.
+3. **Order Management:** View all orders, update status.
+4. **Django Admin:** Full admin interface at `/admin/`.
 
-## Database Schema (MongoDB Collections)
+## Database Schema
 
-### Users
-- `_id`: ObjectId
-- `name`: String
-- `email`: String (Unique)
-- `password`: String (Hashed)
-- `isAdmin`: Boolean
-- `createdAt`: Date
+### User (Django AbstractUser)
+- username, email, password (hashed), phone_number, is_staff
 
-### Products
-- `_id`: ObjectId
-- `name`: String
-- `description`: String
-- `price`: Number
-- `image`: String (URL)
-- `category`: String
-- `countInStock`: Number
-- `createdAt`: Date
+### Category
+- name, slug (unique), description
 
-### Orders
-- `_id`: ObjectId
-- `user`: ObjectId (Ref: User)
-- `orderItems`: Array
-    - `name`: String
-    - `qty`: Number
-    - `image`: String
-    - `price`: Number
-    - `product`: ObjectId (Ref: Product)
-- `shippingAddress`: Object (Address, City, PostalCode, Country)
-- `totalPrice`: Number
-- `status`: String (Pending, Completed, Shipped)
-- `createdAt`: Date
+### Product
+- name, description, price, image, category (FK), stock, available, created_at
 
-## Interface & UI/UX Requirements
-- **Responsive Design:** Mobile-friendly layouts.
-- **Clean Aesthetic:** Consistent color scheme and typography.
-- **Navigation:** Functional and intuitive navigation bar.
-- **Feedback:** Loading states, success/error messages for forms.
+### Order
+- user (FK), full_name, email, address, city, postal_code, country, total, status, created_at
 
-## Development Workflow
-- **Frontend:** `./client`
-- **Backend:** `./server`
-- **Environment Variables:** Use `.env` files for secrets (Mongo URI, JWT Secret).
-- **Validation:** Client-side and server-side form validation.
+### OrderItem
+- order (FK), product (FK), product_name, price, quantity
+
+## Seed Accounts
+| Role | Username | Password |
+|------|----------|----------|
+| Admin | admin | admin123 |
+| Customer | customer | customer123 |
+
+## Commands
+```bash
+pip install -r requirements.txt     # Install dependencies
+python manage.py runserver          # Start dev server
+python manage.py makemigrations     # Create migrations
+python manage.py migrate            # Apply migrations
+python seed.py                      # Seed products & test users
+python manage.py createsuperuser    # Create admin
+```
+
+## Design
+See `DESIGN.md` for the 7-Evelyn design system (colors, typography, spacing, components).

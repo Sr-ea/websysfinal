@@ -1,0 +1,46 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Shopping Cart{% endblock %}
+
+{% block content %}
+<div class="cart-page">
+  <h1>Shopping Cart</h1>
+
+  {% if cart %}
+    {% for item in cart %}
+    <div class="cart-item">
+      <div>
+        {% if item.product.image %}
+          <img src="{{ item.product.image.url }}" alt="{{ item.product.name }}">
+        {% else %}
+          <div style="width:80px;height:80px;background:var(--gray-100);border-radius:var(--radius-sm);display:flex;align-items:center;justify-content:center;font-size:2rem;">📦</div>
+        {% endif %}
+      </div>
+      <div class="item-info">
+        <h3><a href="{% url 'catalog:product_detail' item.product.id %}">{{ item.product.name }}</a></h3>
+        <div class="item-price">₱{{ item.price }}</div>
+      </div>
+      <form class="qty-form" method="post" action="{% url 'cart:cart_update' item.product.id %}">
+        {% csrf_token %}
+        <input type="number" name="quantity" value="{{ item.quantity }}" min="0" max="{{ item.product.stock }}">
+        <button type="submit" class="btn btn-sm btn-outline">Update</button>
+      </form>
+      <div class="item-total">₱{{ item.total }}</div>
+      <a href="{% url 'cart:cart_remove' item.product.id %}" class="btn btn-sm btn-danger">Remove</a>
+    </div>
+    {% endfor %}
+
+    <div class="cart-summary">
+      <div class="total">Total: ₱{{ cart.get_total }}</div>
+      <a href="{% url 'checkout:checkout' %}" class="btn btn-primary">Proceed to Checkout</a>
+    </div>
+  {% else %}
+    <div class="empty-state">
+      <div class="empty-icon">🛒</div>
+      <h2>Your cart is empty</h2>
+      <p>Browse our products and add some items!</p>
+      <a href="{% url 'catalog:product_list' %}" class="btn btn-primary" style="margin-top:16px;">Start Shopping</a>
+    </div>
+  {% endif %}
+</div>
+{% endblock %}

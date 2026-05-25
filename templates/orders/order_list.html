@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+{% block title %}My Orders{% endblock %}
+
+{% block content %}
+<div class="orders-page">
+  <h1>My Orders</h1>
+
+  {% if orders %}
+    {% for order in orders %}
+    <a href="{% url 'orders:order_detail' order.id %}" style="text-decoration:none;color:inherit;">
+      <div class="order-card">
+        <div class="order-meta">
+          <h3>Order #{{ order.id }}</h3>
+          <small>{{ order.created_at|date:"F j, Y, g:i A" }}</small>
+        </div>
+        <div style="text-align:right;">
+          <div style="font-weight:700;font-size:1.1rem;color:var(--orange-600);">₱{{ order.total }}</div>
+          <span class="status-badge status-{{ order.status }}">{{ order.get_status_display }}</span>
+        </div>
+      </div>
+    </a>
+    {% endfor %}
+  {% else %}
+    <div class="empty-state">
+      <div class="empty-icon">📋</div>
+      <h2>No orders yet</h2>
+      <p>Start shopping to see your orders here.</p>
+      <a href="{% url 'catalog:product_list' %}" class="btn btn-primary" style="margin-top:16px;">Browse Products</a>
+    </div>
+  {% endif %}
+</div>
+{% endblock %}

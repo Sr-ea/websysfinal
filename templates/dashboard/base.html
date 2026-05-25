@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+{% block title %}Admin {{ block.super }}{% endblock %}
+
+{% block content %}
+<div class="dashboard-layout">
+  <div class="dashboard-sidebar">
+    <a href="{% url 'dashboard:dashboard_home' %}">Overview</a>
+    <a href="{% url 'dashboard:dashboard_products' %}">Products</a>
+    <a href="{% url 'dashboard:dashboard_orders' %}">Orders</a>
+    <a href="{% url 'admin:index' %}">Django Admin</a>
+    <a href="{% url 'catalog:product_list' %}">&larr; Back to Store</a>
+  </div>
+  <div class="dashboard-main">
+    {% block dashboard_content %}{% endblock %}
+  </div>
+</div>
+{% endblock %}
