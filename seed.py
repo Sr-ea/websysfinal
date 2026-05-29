@@ -19,10 +19,10 @@ categories = {
         'slug': 'fruits-vegetables',
         'description': 'Fresh fruits and vegetables sourced daily.',
         'products': [
-            ('Dole Bananas', 65.00, 100),
-            ('Washington Red Apples', 90.00, 80),
-            ('Baguio Carrots', 55.00, 60),
-            ('Fresh Tomatoes', 45.00, 75),
+            ('Dole Bananas', 65.00, 100, 'products/DOLEbanana.png'),
+            ('Washington Red Apples', 90.00, 80, 'products/WashingtonApple.jpg'),
+            ('Baguio Carrots', 55.00, 60, 'products/carrot.webp'),
+            ('Fresh Tomatoes', 45.00, 75, 'products/Tomato.jpg'),
         ],
     },
     'dairy-products': {
@@ -30,10 +30,10 @@ categories = {
         'slug': 'dairy-products',
         'description': 'Fresh dairy and chilled essentials.',
         'products': [
-            ('Alaska Fresh Milk', 85.00, 50),
-            ('Eden Cheese', 120.00, 40),
-            ('Magnolia Butter', 95.00, 35),
-            ('Nestlé Yogurt', 70.00, 45),
+            ('Alaska Fresh Milk', 85.00, 50, 'products/AlaskaFreshMilk.webp'),
+            ('Eden Cheese', 120.00, 40, 'products/EdenCheese.jpg'),
+            ('Magnolia Butter', 95.00, 35, 'products/MagnoliaButter.png'),
+            ('Nestlé Yogurt', 70.00, 45, 'products/NestleYogurt.jpg'),
         ],
     },
     'snacks': {
@@ -41,10 +41,10 @@ categories = {
         'slug': 'snacks',
         'description': 'Crunchy snacks and crackers for every craving.',
         'products': [
-            ('Piattos Cheese', 45.00, 90),
-            ('Nova Multigrain Snacks', 50.00, 85),
-            ('SkyFlakes Crackers', 35.00, 120),
-            ('Rebisco Chocolate Crackers', 40.00, 100),
+            ('Piattos Cheese', 45.00, 90, 'products/Piattoscheese.jpg'),
+            ('Nova Multigrain Snacks', 50.00, 85, 'products/Nova.webp'),
+            ('SkyFlakes Crackers', 35.00, 120, 'products/Skyflakes.webp'),
+            ('Rebisco Chocolate Crackers', 40.00, 100, 'products/RebiscoChoco.webp'),
         ],
     },
     'beverages': {
@@ -52,10 +52,10 @@ categories = {
         'slug': 'beverages',
         'description': 'Refreshing drinks to quench your thirst.',
         'products': [
-            ('Coca-Cola Mismo', 55.00, 70),
-            ('Wilkins Pure Bottled Water', 25.00, 150),
-            ('C2 Green Tea', 35.00, 100),
-            ('Zest-O Orange Juice', 40.00, 80),
+            ('Coca-Cola Mismo', 55.00, 70, 'products/CokeMismo.jpg'),
+            ('Wilkins Pure Bottled Water', 25.00, 150, 'products/Wilkins water.jpg'),
+            ('C2 Green Tea', 35.00, 100, 'products/c2Greentea.webp'),
+            ('Zest-O Orange Juice', 40.00, 80, 'products/ZestoOrange.jpg'),
         ],
     },
     'household-essentials': {
@@ -63,10 +63,10 @@ categories = {
         'slug': 'household-essentials',
         'description': 'Cleaning and personal care products.',
         'products': [
-            ('Surf Powder Detergent', 95.00, 60),
-            ('Joy Dishwashing Liquid', 75.00, 55),
-            ('Safeguard Soap', 40.00, 90),
-            ('Palmolive Shampoo', 85.00, 65),
+            ('Surf Powder Detergent', 95.00, 60, 'products/SurfPowder.webp'),
+            ('Joy Dishwashing Liquid', 75.00, 55, 'products/Joy.jpg'),
+            ('Safeguard Soap', 40.00, 90, 'products/Safeguard.jpg'),
+            ('Palmolive Shampoo', 85.00, 65, 'products/Palmolive.jpg'),
         ],
     },
 }
@@ -81,20 +81,21 @@ for cat_data in categories.values():
     else:
         print(f'  Found category: {cat.name}')
 
-    for name, price, stock in cat_data['products']:
-        product, created = Product.objects.get_or_create(
+    for name, price, stock, image_name in cat_data['products']:
+        product, created = Product.objects.update_or_create(
             name=name,
             defaults={
                 'category': cat,
                 'price': price,
                 'stock': stock,
+                'image': image_name,
                 'description': f'Fresh {name.lower()} — available at 7-Evelyn.',
             },
         )
         if created:
             print(f'    Created product: {product.name} (₱{product.price})')
         else:
-            print(f'    Found product: {product.name}')
+            print(f'    Updated product: {product.name}')
 
 admin_created = False
 if not User.objects.filter(is_superuser=True).exists():

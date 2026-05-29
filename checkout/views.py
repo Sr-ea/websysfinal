@@ -3,6 +3,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from cart.cart import Cart
 from orders.models import Order, OrderItem
+from .forms import CheckoutForm
 
 
 @login_required
@@ -13,39 +14,56 @@ def checkout(request):
         return redirect('catalog:product_list')
 
     if request.method == 'POST':
-        full_name = request.POST.get('full_name')
-        email = request.POST.get('email')
-        address = request.POST.get('address')
-        city = request.POST.get('city')
-        postal_code = request.POST.get('postal_code')
-        country = request.POST.get('country', 'Philippines')
-
-        order = Order.objects.create(
-            user=request.user,
-            full_name=full_name,
-            email=email,
-            address=address,
-            city=city,
-            postal_code=postal_code,
-            country=country,
-            total=cart.get_total(),
-            status='pending',
-        )
-
-        for item in cart:
-            OrderItem.objects.create(
-                order=order,
-                product=item['product'],
-                product_name=item['product'].name,
-                price=item['price'],
-                quantity=item['quantity'],
+        form = CheckoutForm(request.POST)
+        if form.is_valid():
+            cd = form.cleaned_data
+            order = Order.objects.create(
+                user=request.user,
+                full_name=cd['full_name'],
+                email=cd['email'],
+                address=cd['address'],
+                city=cd['city'],
+                postal_code=cd['postal_code'],
+                country=cd['country'],
+                total=cart.get_total(),
+                status='pending',
             )
 
-        cart.clear()
-        messages.success(request, 'Order placed successfully!')
-        return redirect('checkout:checkout_success', order_id=order.id)
+            for item in cart:
+                product = item['product']
+                product.refresh_from_db()
 
-    return render(request, 'checkout/checkout.html', {'cart': cart})
+                if not product.available or product.stock < item['quantity']:
+                    order.delete()
+                    messages.error(
+                        request,
+                        f'Not enough stock for "{product.name}". '
+                        f'Only {product.stock} left in stock.'
+                    )
+                    return redirect('cart:cart_detail')
+
+                OrderItem.objects.create(
+                    order=order,
+                    product=product,
+                    product_name=product.name,
+                    price=item['price'],
+                    quantity=item['quantity'],
+                )
+
+                product.stock -= item['quantity']
+                product.save()
+
+            cart.clear()
+            messages.success(request, 'Order placed successfully!')
+            return redirect('checkout:checkout_success', order_id=order.id)
+        messages.error(request, 'Please correct the errors below.')
+    else:
+        form = CheckoutForm(initial={
+            'full_name': request.user.get_full_name() or request.user.username,
+            'email': request.user.email,
+        })
+
+    return render(request, 'checkout/checkout.html', {'cart': cart, 'form': form})
 
 
 @login_required

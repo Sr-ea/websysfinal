@@ -28,7 +28,20 @@ def cart_remove(request, product_id):
 def cart_update(request, product_id):
     product = get_object_or_404(Product, id=product_id)
     cart = Cart(request)
-    quantity = int(request.POST.get('quantity', 1))
+    try:
+        quantity = int(request.POST.get('quantity', 1))
+    except (TypeError, ValueError):
+        messages.error(request, 'Invalid quantity.')
+        return redirect('cart:cart_detail')
+
+    if quantity < 0:
+        messages.error(request, 'Quantity cannot be negative.')
+        return redirect('cart:cart_detail')
+
+    if quantity > product.stock:
+        messages.error(request, f'Only {product.stock} in stock.')
+        return redirect('cart:cart_detail')
+
     if quantity > 0:
         cart.add(product, quantity, override_quantity=True)
     else:

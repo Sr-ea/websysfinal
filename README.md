@@ -50,4 +50,27 @@ templates/           # HTML templates
 static/              # CSS
 media/               # Product image uploads
 seed.py              # Database seeder
+
+## Deployment
+
+For production deployment:
+
+```bash
+# 1. Set DEBUG=False and configure ALLOWED_HOSTS in market/settings.py
+# 2. Collect static files
+python manage.py collectstatic --noinput
+
+# 3. Run migrations
+python manage.py migrate
+
+# 4. Start with a production WSGI server (e.g. Gunicorn)
+gunicorn market.wsgi:application --bind 0.0.0.0:8000
+```
+
+**Important production settings to change in `market/settings.py`:**
+- `DEBUG = False`
+- `ALLOWED_HOSTS = ['yourdomain.com']`
+- Set a secure `SECRET_KEY` via environment variable
+- Configure a production database (optional, SQLite works for low traffic)
+- Serve static/media files via a reverse proxy (Nginx) or WhiteNoise
 ```

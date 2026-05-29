@@ -42,8 +42,11 @@
 - [x] Django Admin interface at `/admin/`.
 
 ## Phase 6: Polishing & Validation
-- [ ] Client/server form validation enhancements.
-- [ ] Final UI/UX pass: loading states & error handling.
-- [ ] Add product images (placeholder or actual uploads).
-- [ ] Responsive design verification.
-- [ ] Prepare documentation.
+- [x] Client/server form validation enhancements.
+- [x] Final UI/UX pass: loading states & error handling.
+- [x] Add product images (placeholder or actual uploads).
+- [x] Responsive design verification.
+- [x] Prepare documentation.
+
+## Phase 7: Stock & Inventory
+- [x] Decrement product stock on checkout (with insufficient stock handling).

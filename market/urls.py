@@ -2,6 +2,10 @@ from django.contrib import admin
 from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
+from catalog import views as catalog_views
+
+handler404 = catalog_views.custom_404
+handler500 = catalog_views.custom_500
 
 urlpatterns = [
     path('admin/', admin.site.urls),

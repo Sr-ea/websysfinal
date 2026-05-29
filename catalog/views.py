@@ -1,5 +1,14 @@
 from django.shortcuts import render, get_object_or_404
+from django.http import Http404
 from .models import Category, Product
+
+
+def custom_404(request, exception):
+    return render(request, '404.html', status=404)
+
+
+def custom_500(request):
+    return render(request, '500.html', status=500)
 
 
 def product_list(request, category_slug=None):

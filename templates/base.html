@@ -13,6 +13,7 @@
       <a href="{% url 'catalog:product_list' %}" class="navbar-brand">
         🛒 7-Evelyn
       </a>
+      <button class="nav-toggle" aria-label="Toggle menu">&#9776;</button>
       <ul class="navbar-nav">
         <li><a href="{% url 'catalog:product_list' %}">Home</a></li>
         {% if user.is_authenticated %}
@@ -24,7 +25,10 @@
             <li><a href="{% url 'dashboard:dashboard_home' %}">Admin</a></li>
           {% endif %}
           <li class="nav-auth">
-            <a href="{% url 'logout' %}">Logout ({{ user.username }})</a>
+            <form id="logout-form" method="post" action="{% url 'logout' %}" style="display: none;">
+              {% csrf_token %}
+            </form>
+            <a href="#" onclick="document.getElementById('logout-form').submit(); return false;">Logout ({{ user.username }})</a>
           </li>
         {% else %}
           <li class="nav-auth">
@@ -51,5 +55,24 @@
       &copy; 2026 <span>7-Evelyn</span> — Fresh produce, delivered.
     </div>
   </footer>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      var toggle = document.querySelector('.nav-toggle');
+      var nav = document.querySelector('.navbar-nav');
+      if (toggle && nav) {
+        toggle.addEventListener('click', function() {
+          nav.classList.toggle('open');
+        });
+      }
+      document.querySelectorAll('.message.success').forEach(function(msg) {
+        setTimeout(function() {
+          msg.style.transition = 'opacity 0.5s';
+          msg.style.opacity = '0';
+          setTimeout(function() { msg.remove(); }, 500);
+        }, 4000);
+      });
+    });
+  </script>
 </body>
 </html>

@@ -4,39 +4,33 @@
 {% block dashboard_content %}
 <h1>{% if product %}Edit{% else %}Add{% endif %} Product</h1>
 <div style="max-width:600px;">
-  <form method="post" enctype="multipart/form-data" class="checkout-form" style="box-shadow:none;padding:0;">
+  <form method="post" enctype="multipart/form-data" class="checkout-form" style="box-shadow:none;padding:0;" novalidate>
     {% csrf_token %}
-    <div class="form-row">
-      <label>Name</label>
-      <input type="text" name="name" value="{{ product.name|default:'' }}" required>
-    </div>
-    <div class="form-row">
-      <label>Description</label>
-      <textarea name="description" rows="4">{{ product.description|default:'' }}</textarea>
-    </div>
-    <div class="form-row">
-      <label>Price (₱)</label>
-      <input type="number" name="price" step="0.01" value="{{ product.price|default:'' }}" required>
-    </div>
-    <div class="form-row">
-      <label>Category</label>
-      <select name="category" required>
-        {% for cat in categories %}
-          <option value="{{ cat.id }}" {% if product.category_id == cat.id %}selected{% endif %}>{{ cat.name }}</option>
+    {% if form.non_field_errors %}
+      <div class="form-errors">
+        {% for err in form.non_field_errors %}
+          <p class="error-msg">{{ err }}</p>
         {% endfor %}
-      </select>
-    </div>
-    <div class="form-row">
-      <label>Stock</label>
-      <input type="number" name="stock" value="{{ product.stock|default:'0' }}" min="0">
-    </div>
-    <div class="form-row">
-      <label>Image</label>
-      <input type="file" name="image" accept="image/*">
-      {% if product.image %}
-        <p style="font-size:0.85rem;color:var(--gray-500);margin-top:4px;">Current: {{ product.image.name }}</p>
+      </div>
+    {% endif %}
+
+    {% for field in form %}
+    <div class="form-row{% if field.errors %} has-error{% endif %}">
+      <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+      {{ field }}
+      {% if field.errors %}
+        <div class="field-errors">
+          {% for err in field.errors %}
+            <small class="error-msg">{{ err }}</small>
+          {% endfor %}
+        </div>
+      {% endif %}
+      {% if field.help_text %}
+        <small class="helptext">{{ field.help_text }}</small>
       {% endif %}
     </div>
+    {% endfor %}
+
     <button type="submit" class="btn btn-primary">{% if product %}Update{% else %}Create{% endif %} Product</button>
     <a href="{% url 'dashboard:dashboard_products' %}" class="btn btn-outline" style="margin-top:8px;">Cancel</a>
   </form>

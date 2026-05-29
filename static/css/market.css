@@ -173,12 +173,12 @@ a:hover { color: var(--green-500); }
   background: var(--white);
   padding: 16px 0;
   box-shadow: var(--shadow-sm);
-  overflow-x: auto;
 }
 
 .category-bar .container {
   display: flex;
   gap: 8px;
+  flex-wrap: wrap;
 }
 
 .category-bar a {
@@ -210,11 +210,18 @@ a:hover { color: var(--green-500); }
 
 .product-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  grid-template-columns: repeat(4, 1fr);
   gap: 24px;
   max-width: 1200px;
   margin: 0 auto;
   padding: 0 20px 40px;
+}
+
+@media (max-width: 1024px) {
+  .product-grid {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+  }
 }
 
 .product-card {
@@ -350,6 +357,18 @@ a:hover { color: var(--green-500); }
 .btn-danger:hover { opacity: 0.9; color: var(--white); }
 
 .btn-sm { padding: 6px 14px; font-size: 0.85rem; }
+
+/* Nav toggle (hamburger) */
+.nav-toggle {
+  display: none;
+  background: none;
+  border: none;
+  color: var(--white);
+  font-size: 1.5rem;
+  cursor: pointer;
+  padding: 4px 8px;
+  line-height: 1;
+}
 
 /* Messages */
 .messages {
@@ -535,6 +554,30 @@ a:hover { color: var(--green-500); }
 .checkout-form input:focus {
   outline: none;
   border-color: var(--green-500);
+}
+
+/* Form validation states */
+.checkout-form .has-error input,
+.checkout-form .has-error input:focus {
+  border-color: var(--red-500);
+}
+
+.field-errors {
+  margin-top: 4px;
+}
+
+.error-msg {
+  color: var(--red-500);
+  font-size: 0.85rem;
+  font-weight: 500;
+}
+
+.form-errors {
+  background: #f8d7da;
+  color: #721c24;
+  padding: 12px 16px;
+  border-radius: var(--radius-sm);
+  margin-bottom: 16px;
 }
 
 .order-summary-card {
@@ -746,6 +789,11 @@ a:hover { color: var(--green-500); }
   background: var(--gray-100);
 }
 
+.table-responsive {
+  overflow-x: auto;
+  width: 100%;
+}
+
 /* Footer */
 .footer {
   background: var(--green-900);
@@ -785,27 +833,136 @@ a:hover { color: var(--green-500); }
 .success-page h1 { color: var(--green-900); margin-bottom: 8px; }
 
 /* Responsive */
+@media (max-width: 900px) {
+  .checkout-grid { grid-template-columns: 1fr; }
+  .order-summary-card { position: static; }
+}
+
 @media (max-width: 768px) {
-  .navbar .container { flex-wrap: wrap; height: auto; padding: 12px 0; gap: 8px; }
-  .navbar-nav { flex-wrap: wrap; gap: 4px; }
-  .navbar-nav a { font-size: 0.85rem; padding: 6px 10px; }
+  .nav-toggle { display: block; }
+
+  .navbar .container { flex-wrap: wrap; height: auto; padding: 12px 0; }
+
+  .navbar-nav {
+    display: none;
+    flex-direction: column;
+    width: 100%;
+    gap: 0;
+    padding: 8px 0 12px;
+  }
+
+  .navbar-nav.open {
+    display: flex;
+  }
+
+  .navbar-nav a,
+  .navbar-nav .nav-auth a,
+  .nav-auth .btn-logout {
+    display: block;
+    padding: 10px 12px;
+    font-size: 0.95rem;
+    width: 100%;
+  }
+
+  .nav-auth {
+    width: 100%;
+  }
+
+  .nav-auth .btn-logout {
+    text-align: left;
+    padding: 10px 12px;
+  }
 
   .hero h1 { font-size: 1.8rem; }
   .hero p { font-size: 1rem; }
 
-  .product-grid { grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 12px; }
-  .product-card .image-wrap { height: 160px; }
+  .hero .search-form {
+    flex-direction: column;
+    gap: 8px;
+  }
+  
+  .hero .search-form input {
+    border-radius: var(--radius-md);
+  }
+  
+  .hero .search-form button {
+    border-radius: var(--radius-md);
+    width: 100%;
+  }
+
+  .product-grid { grid-template-columns: repeat(2, 1fr); gap: 16px; }
+  .product-card .image-wrap { height: 180px; }
 
   .product-detail { grid-template-columns: 1fr; }
-
-  .checkout-grid { grid-template-columns: 1fr; }
+  .product-detail .detail-info .btn-cart { max-width: 100%; }
 
   .dashboard-layout { grid-template-columns: 1fr; }
   .dashboard-sidebar { display: flex; overflow-x: auto; padding: 0; }
   .dashboard-sidebar a { white-space: nowrap; padding: 12px 16px; }
 
-  .cart-item { flex-wrap: wrap; }
+  .cart-item { flex-wrap: wrap; gap: 12px; }
   .cart-item .item-total { min-width: auto; }
+  .cart-item .qty-form { width: 100%; }
+  .cart-item .qty-form input { flex: 1; width: auto; }
 
   .order-card { flex-direction: column; gap: 8px; align-items: flex-start; }
+
+  .dashboard-main { padding: 20px 16px; }
+
+  .form-card { padding: 20px; }
+  .checkout-form { padding: 20px; }
+}
+
+@media (max-width: 640px) {
+  .product-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+    padding: 0 12px 24px;
+  }
+  .product-card .image-wrap { height: 140px; }
+  .product-card .info { padding: 10px; }
+  .product-card h3 { font-size: 0.9rem; margin-bottom: 2px; }
+  .product-card .category-tag { font-size: 0.7rem; }
+  .product-card .price { font-size: 1rem; padding-top: 4px; }
+  .btn-cart { padding: 6px; font-size: 0.8rem; margin-top: 8px; }
+  .product-card .stock-badge { font-size: 0.7rem; }
+
+  .section-title { font-size: 1.2rem; padding: 24px 12px 12px; }
+}
+
+@media (max-width: 480px) {
+  .cart-item img { width: 56px; height: 56px; }
+  .cart-item .qty-form input { width: 48px; font-size: 0.85rem; }
+  .cart-item .btn-sm { font-size: 0.75rem; padding: 4px 10px; }
+  .cart-page h1 { font-size: 1.4rem; }
+  .cart-summary .total { font-size: 1.1rem; }
+
+  .order-card .order-meta h3 { font-size: 0.9rem; }
+
+  .stats-grid { grid-template-columns: 1fr 1fr; gap: 12px; }
+  .stat-card { padding: 16px; }
+  .stat-card .stat-number { font-size: 1.5rem; }
+
+  .dashboard-table th,
+  .dashboard-table td { padding: 8px 10px; font-size: 0.8rem; }
+
+  .hero h1 { font-size: 1.4rem; }
+  .hero { padding: 40px 16px; }
+  
+  .checkout-page h1 { font-size: 1.4rem; }
+  .checkout-form { padding: 16px; }
+  .checkout-form input { padding: 8px 12px; font-size: 0.9rem; }
+
+  .product-detail { padding: 20px 16px; gap: 24px; }
+  .product-detail .detail-info h1 { font-size: 1.3rem; }
+  .product-detail .detail-info .price-lg { font-size: 1.5rem; }
+
+  .orders-page h1 { font-size: 1.4rem; }
+  .success-page h1 { font-size: 1.4rem; }
+
+  .dashboard-main h1 { font-size: 1.3rem; }
+  .dashboard-main { padding: 16px 12px; }
+
+  .form-page h1 { font-size: 1.3rem; }
+  .form-card { padding: 16px; }
 }

@@ -2,6 +2,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.admin.views.decorators import staff_member_required
 from django.contrib import messages
 from catalog.models import Category, Product
+from catalog.forms import ProductForm
 from orders.models import Order
 
 
@@ -26,25 +27,16 @@ def dashboard_products(request):
 def dashboard_product_add(request):
     categories = Category.objects.all()
     if request.method == 'POST':
-        name = request.POST.get('name')
-        description = request.POST.get('description', '')
-        price = request.POST.get('price')
-        category_id = request.POST.get('category')
-        stock = request.POST.get('stock', 0)
-        image = request.FILES.get('image')
+        form = ProductForm(request.POST, request.FILES)
+        if form.is_valid():
+            product = form.save()
+            messages.success(request, f'Product "{product.name}" created.')
+            return redirect('dashboard:dashboard_products')
+        messages.error(request, 'Please correct the errors below.')
+    else:
+        form = ProductForm()
 
-        product = Product.objects.create(
-            name=name,
-            description=description,
-            price=price,
-            category_id=category_id,
-            stock=stock,
-            image=image,
-        )
-        messages.success(request, f'Product "{name}" created.')
-        return redirect('dashboard:dashboard_products')
-
-    return render(request, 'dashboard/product_form.html', {'categories': categories, 'product': None})
+    return render(request, 'dashboard/product_form.html', {'categories': categories, 'product': None, 'form': form})
 
 
 @staff_member_required
@@ -52,18 +44,16 @@ def dashboard_product_edit(request, product_id):
     product = get_object_or_404(Product, id=product_id)
     categories = Category.objects.all()
     if request.method == 'POST':
-        product.name = request.POST.get('name', product.name)
-        product.description = request.POST.get('description', product.description)
-        product.price = request.POST.get('price', product.price)
-        product.category_id = request.POST.get('category', product.category_id)
-        product.stock = request.POST.get('stock', product.stock)
-        if request.FILES.get('image'):
-            product.image = request.FILES['image']
-        product.save()
-        messages.success(request, f'Product "{product.name}" updated.')
-        return redirect('dashboard:dashboard_products')
+        form = ProductForm(request.POST, request.FILES, instance=product)
+        if form.is_valid():
+            form.save()
+            messages.success(request, f'Product "{product.name}" updated.')
+            return redirect('dashboard:dashboard_products')
+        messages.error(request, 'Please correct the errors below.')
+    else:
+        form = ProductForm(instance=product)
 
-    return render(request, 'dashboard/product_form.html', {'categories': categories, 'product': product})
+    return render(request, 'dashboard/product_form.html', {'categories': categories, 'product': product, 'form': form})
 
 
 @staff_member_required

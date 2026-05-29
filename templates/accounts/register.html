@@ -2,9 +2,14 @@
 {% block title %}Register{% endblock %}
 
 {% block content %}
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/intl-tel-input@23.0.0/build/css/intlTelInput.css">
+<style>
+  .iti { width: 100%; }
+</style>
+
 <div class="form-page">
   <h1>Create Account</h1>
-  <form method="post" class="form-card">
+  <form method="post" class="form-card" id="register-form">
     {% csrf_token %}
     {{ form.as_p }}
     <button type="submit" class="btn btn-primary">Register</button>
@@ -13,4 +18,28 @@
     Already have an account? <a href="{% url 'login' %}">Login here</a>.
   </p>
 </div>
+
+<script src="https://cdn.jsdelivr.net/npm/intl-tel-input@23.0.0/build/js/intlTelInput.min.js"></script>
+<script>
+  document.addEventListener("DOMContentLoaded", function() {
+    var input = document.querySelector("#id_phone_number");
+    if (input) {
+      var iti = window.intlTelInput(input, {
+        utilsScript: "https://cdn.jsdelivr.net/npm/intl-tel-input@23.0.0/build/js/utils.js",
+        initialCountry: "auto",
+        geoIpLookup: function(callback) {
+          fetch("https://ipapi.co/json").then(function(res) { return res.json(); }).then(function(data) { callback(data.country_code); }).catch(function() { callback("ph"); });
+        },
+        nationalMode: false,
+        strictMode: true,
+      });
+
+      document.querySelector("#register-form").addEventListener("submit", function() {
+        if (input.value.trim()) {
+          input.value = iti.getNumber();
+        }
+      });
+    }
+  });
+</script>
 {% endblock %}

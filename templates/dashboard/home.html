@@ -20,22 +20,24 @@
 
 <h2 style="font-size:1.2rem;color:var(--green-900);margin-bottom:12px;">Recent Orders</h2>
 {% if recent_orders %}
-<table class="dashboard-table">
-  <thead>
-    <tr><th>#</th><th>Customer</th><th>Total</th><th>Status</th><th>Date</th></tr>
-  </thead>
-  <tbody>
-    {% for order in recent_orders %}
-    <tr>
-      <td>{{ order.id }}</td>
-      <td>{{ order.full_name }}</td>
-      <td>₱{{ order.total }}</td>
-      <td><span class="status-badge status-{{ order.status }}">{{ order.get_status_display }}</span></td>
-      <td>{{ order.created_at|date:"M j, Y" }}</td>
-    </tr>
-    {% endfor %}
-  </tbody>
-</table>
+<div class="table-responsive">
+  <table class="dashboard-table">
+    <thead>
+      <tr><th>#</th><th>Customer</th><th>Total</th><th>Status</th><th>Date</th></tr>
+    </thead>
+    <tbody>
+      {% for order in recent_orders %}
+      <tr>
+        <td>{{ order.id }}</td>
+        <td>{{ order.full_name }}</td>
+        <td>₱{{ order.total }}</td>
+        <td><span class="status-badge status-{{ order.status }}">{{ order.get_status_display }}</span></td>
+        <td>{{ order.created_at|date:"M j, Y" }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
 {% else %}
 <p style="color:var(--gray-500);">No orders yet.</p>
 {% endif %}
