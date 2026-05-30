@@ -12,7 +12,14 @@ def cart_detail(request):
 def cart_add(request, product_id):
     product = get_object_or_404(Product, id=product_id, available=True)
     cart = Cart(request)
-    cart.add(product)
+    try:
+        quantity = int(request.POST.get('quantity', 1))
+    except (TypeError, ValueError):
+        quantity = 1
+    if quantity > product.stock:
+        messages.error(request, f'Only {product.stock} in stock.')
+        return redirect(request.META.get('HTTP_REFERER', 'catalog:product_list'))
+    cart.add(product, quantity)
     messages.success(request, f'{product.name} added to cart.')
     return redirect(request.META.get('HTTP_REFERER', 'catalog:product_list'))
 

@@ -46,7 +46,13 @@
       {% else %}
         <span class="stock-badge out">Out of Stock</span>
       {% endif %}
-      <a href="{% url 'cart:cart_add' product.id %}" class="btn btn-cart">Add to Cart</a>
+      <a href="{% url 'cart:cart_add' product.id %}"
+         class="btn btn-cart"
+         data-add-cart
+         data-product-name="{{ product.name }}"
+         data-product-price="{{ product.price }}"
+         data-product-stock="{{ product.stock }}"
+         data-product-img="{% if product.image %}{{ product.image.url }}{% endif %}">Add to Cart</a>
     </div>
   </div>
   {% endfor %}

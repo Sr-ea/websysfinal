@@ -20,13 +20,20 @@
         <h3><a href="{% url 'catalog:product_detail' item.product.id %}">{{ item.product.name }}</a></h3>
         <div class="item-price">₱{{ item.price }}</div>
       </div>
-      <form class="qty-form" method="post" action="{% url 'cart:cart_update' item.product.id %}">
+      <form method="post" action="{% url 'cart:cart_update' item.product.id %}" data-cart-qty-form>
         {% csrf_token %}
-        <input type="number" name="quantity" value="{{ item.quantity }}" min="0" max="{{ item.product.stock }}">
-        <button type="submit" class="btn btn-sm btn-outline">Update</button>
+        <div class="qty-selector" data-cart-qty>
+          <button type="button" class="qty-btn" data-qty-minus>&minus;</button>
+          <input type="number" name="quantity" value="{{ item.quantity }}" min="1" max="{{ item.product.stock }}">
+          <button type="button" class="qty-btn" data-qty-plus>+</button>
+        </div>
       </form>
       <div class="item-total">₱{{ item.total }}</div>
-      <a href="{% url 'cart:cart_remove' item.product.id %}" class="btn btn-sm btn-danger">Remove</a>
+      <a href="{% url 'cart:cart_remove' item.product.id %}"
+         class="btn btn-sm btn-danger"
+         data-remove-item
+         data-item-name="{{ item.product.name }}"
+         data-item-img="{% if item.product.image %}{{ item.product.image.url }}{% endif %}">Remove</a>
     </div>
     {% endfor %}
 

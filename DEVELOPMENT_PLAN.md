@@ -50,3 +50,9 @@
 
 ## Phase 7: Stock & Inventory
 - [x] Decrement product stock on checkout (with insufficient stock handling).
+
+## Phase 8: Dark Mode & Quality
+- [x] Create `media/products/` directory with 20 placeholder product images.
+- [x] Implement light/dark mode toggle (CSS custom properties + `data-theme` + localStorage persistence).
+- [x] Add theme toggle button (sun/moon) in navbar with system preference detection.
+- [x] Write 37 unit tests across all 6 apps (models, views, cart logic).
