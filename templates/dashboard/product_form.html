@@ -4,7 +4,7 @@
 {% block dashboard_content %}
 <h1>{% if product %}Edit{% else %}Add{% endif %} Product</h1>
 <div style="max-width:600px;">
-  <form method="post" enctype="multipart/form-data" class="checkout-form" style="box-shadow:none;padding:0;" novalidate>
+  <form method="post" enctype="multipart/form-data" class="form-card" novalidate>
     {% csrf_token %}
     {% if form.non_field_errors %}
       <div class="form-errors">
@@ -31,8 +31,10 @@
     </div>
     {% endfor %}
 
-    <button type="submit" class="btn btn-primary">{% if product %}Update{% else %}Create{% endif %} Product</button>
-    <a href="{% url 'dashboard:dashboard_products' %}" class="btn btn-outline" style="margin-top:8px;">Cancel</a>
+    <div class="form-actions">
+      <button type="submit" class="btn btn-primary">{% if product %}Update{% else %}Create{% endif %} Product</button>
+      <a href="{% url 'dashboard:dashboard_products' %}" class="btn btn-outline">Cancel</a>
+    </div>
   </form>
 </div>
 {% endblock %}
