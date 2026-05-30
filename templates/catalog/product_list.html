@@ -52,7 +52,7 @@
       {% else %}
         <span class="stock-badge stock-high">In Stock ({{ product.stock }})</span>
       {% endif %}
-      {% if product.stock > 0 %}
+      {% if product.stock > 0 and not user.is_staff %}
       <form method="post" action="{% url 'cart:cart_add' product.id %}" class="qty-add-form">
         {% csrf_token %}
         <input type="number" name="quantity" value="1" min="1" max="{{ product.stock }}" class="qty-input">
