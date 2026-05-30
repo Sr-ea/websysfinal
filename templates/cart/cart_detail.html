@@ -13,7 +13,7 @@
         {% if item.product.image %}
           <img src="{{ item.product.image.url }}" alt="{{ item.product.name }}">
         {% else %}
-          <div style="width:80px;height:80px;background:var(--gray-100);border-radius:var(--radius-sm);display:flex;align-items:center;justify-content:center;font-size:2rem;">📦</div>
+          <div class="thumb-placeholder cat-{{ item.product.category.slug }}">{{ item.product.name|first|upper }}</div>
         {% endif %}
       </div>
       <div class="item-info">
@@ -32,7 +32,10 @@
 
     <div class="cart-summary">
       <div class="total">Total: ₱{{ cart.get_total }}</div>
-      <a href="{% url 'checkout:checkout' %}" class="btn btn-primary">Proceed to Checkout</a>
+      <div class="cart-actions">
+        <a href="{% url 'catalog:product_list' %}" class="btn btn-outline">&larr; Continue Shopping</a>
+        <a href="{% url 'checkout:checkout' %}" class="btn btn-primary">Proceed to Checkout</a>
+      </div>
     </div>
   {% else %}
     <div class="empty-state">

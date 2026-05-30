@@ -8,14 +8,15 @@
   <link rel="stylesheet" href="{% static 'css/market.css' %}">
 </head>
 <body>
+  <a href="#main-content" class="skip-link">Skip to content</a>
   <nav class="navbar">
     <div class="container">
       <a href="{% url 'catalog:product_list' %}" class="navbar-brand">
-        🛒 7-Evelyn
+        <span class="brand-icon">7</span><span class="brand-text">-Evelyn</span>
       </a>
       <button class="nav-toggle" aria-label="Toggle menu">&#9776;</button>
       <ul class="navbar-nav">
-        <li><a href="{% url 'catalog:product_list' %}">Home</a></li>
+        <li><a href="{% url 'catalog:product_list' %}"{% if request.path == '/' %} class="active"{% endif %}>Home</a></li>
         {% if user.is_authenticated %}
           <li><a href="{% url 'cart:cart_detail' %}">
             Cart {% if cart_count %}<span class="badge-cart">{{ cart_count }}</span>{% endif %}
@@ -25,10 +26,10 @@
             <li><a href="{% url 'dashboard:dashboard_home' %}">Admin</a></li>
           {% endif %}
           <li class="nav-auth">
-            <form id="logout-form" method="post" action="{% url 'logout' %}" style="display: none;">
+            <form method="post" action="{% url 'logout' %}" class="logout-form">
               {% csrf_token %}
+              <button type="submit" class="logout-btn">Logout ({{ user.username }})</button>
             </form>
-            <a href="#" onclick="document.getElementById('logout-form').submit(); return false;">Logout ({{ user.username }})</a>
           </li>
         {% else %}
           <li class="nav-auth">
@@ -41,14 +42,19 @@
   </nav>
 
   {% if messages %}
-  <div class="messages">
+  <div class="messages" role="alert">
     {% for msg in messages %}
-      <div class="message {{ msg.tags }}">{{ msg }}</div>
+      <div class="message {{ msg.tags }}">
+        <span class="msg-text">{{ msg }}</span>
+        <button class="dismiss-btn" aria-label="Dismiss">&times;</button>
+      </div>
     {% endfor %}
   </div>
   {% endif %}
 
-  {% block content %}{% endblock %}
+  <main id="main-content">
+    {% block content %}{% endblock %}
+  </main>
 
   <footer class="footer">
     <div class="container">
@@ -65,12 +71,22 @@
           nav.classList.toggle('open');
         });
       }
-      document.querySelectorAll('.message.success').forEach(function(msg) {
+      document.querySelectorAll('.message').forEach(function(msg) {
         setTimeout(function() {
           msg.style.transition = 'opacity 0.5s';
           msg.style.opacity = '0';
           setTimeout(function() { msg.remove(); }, 500);
-        }, 4000);
+        }, 5000);
+      });
+      document.querySelectorAll('.dismiss-btn').forEach(function(btn) {
+        btn.addEventListener('click', function() {
+          var msg = btn.closest('.message');
+          if (msg) {
+            msg.style.transition = 'opacity 0.3s';
+            msg.style.opacity = '0';
+            setTimeout(function() { msg.remove(); }, 300);
+          }
+        });
       });
     });
   </script>

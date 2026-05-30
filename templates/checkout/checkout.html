@@ -30,14 +30,21 @@
       </div>
       {% endfor %}
 
-      <button type="submit" class="btn btn-primary">Place Order</button>
+      <button type="submit" class="btn btn-primary" id="place-order-btn">Place Order</button>
     </form>
 
     <div class="order-summary-card">
       <h3>Order Summary</h3>
       {% for item in cart %}
       <div class="summary-item">
-        <span>{{ item.quantity }}x {{ item.product.name }}</span>
+        <span class="summary-product">
+          {% if item.product.image %}
+            <img src="{{ item.product.image.url }}" alt="" class="summary-thumb">
+          {% else %}
+            <span class="thumb-placeholder sm cat-{{ item.product.category.slug }}">{{ item.product.name|first|upper }}</span>
+          {% endif %}
+          {{ item.quantity }}x {{ item.product.name }}
+        </span>
         <span>₱{{ item.total }}</span>
       </div>
       {% endfor %}
@@ -48,4 +55,21 @@
     </div>
   </div>
 </div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    var form = document.querySelector('.checkout-form');
+    var btn = document.getElementById('place-order-btn');
+    if (form && btn) {
+      form.addEventListener('submit', function(e) {
+        if (!confirm('Are you sure you want to place this order?')) {
+          e.preventDefault();
+          return;
+        }
+        btn.disabled = true;
+        btn.textContent = 'Processing\u2026';
+      });
+    }
+  });
+</script>
 {% endblock %}

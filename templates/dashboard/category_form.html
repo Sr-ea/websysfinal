@@ -1,0 +1,35 @@
+{% extends 'dashboard/base.html' %}
+{% block title %}{% if category %}Edit{% else %}Add{% endif %} Category{% endblock %}
+
+{% block dashboard_content %}
+<h1>{% if category %}Edit{% else %}Add{% endif %} Category</h1>
+<div style="max-width:500px;">
+  <form method="post" class="checkout-form" style="box-shadow:none;padding:0;" novalidate>
+    {% csrf_token %}
+    {% if form.non_field_errors %}
+      <div class="form-errors">
+        {% for err in form.non_field_errors %}
+          <p class="error-msg">{{ err }}</p>
+        {% endfor %}
+      </div>
+    {% endif %}
+
+    {% for field in form %}
+    <div class="form-row{% if field.errors %} has-error{% endif %}">
+      <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+      {{ field }}
+      {% if field.errors %}
+        <div class="field-errors">
+          {% for err in field.errors %}
+            <small class="error-msg">{{ err }}</small>
+          {% endfor %}
+        </div>
+      {% endif %}
+    </div>
+    {% endfor %}
+
+    <button type="submit" class="btn btn-primary">{% if category %}Update{% else %}Create{% endif %} Category</button>
+    <a href="{% url 'dashboard:dashboard_categories' %}" class="btn btn-outline" style="margin-top:8px;">Cancel</a>
+  </form>
+</div>
+{% endblock %}

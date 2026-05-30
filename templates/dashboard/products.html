@@ -2,19 +2,32 @@
 {% block title %}Products{% endblock %}
 
 {% block dashboard_content %}
-<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:24px;">
+<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
   <h1 style="margin:0;">Products</h1>
   <a href="{% url 'dashboard:dashboard_product_add' %}" class="btn btn-primary">+ Add Product</a>
 </div>
 
+<form method="get" style="margin-bottom:16px;display:flex;gap:8px;max-width:400px;">
+  <input type="text" name="q" placeholder="Search products..." value="{{ query }}" style="flex:1;padding:8px 14px;border:2px solid var(--gray-200);border-radius:var(--radius-sm);font-size:0.9rem;">
+  <button type="submit" class="btn btn-sm btn-primary">Search</button>
+  {% if query %}<a href="{% url 'dashboard:dashboard_products' %}" class="btn btn-sm btn-outline">Clear</a>{% endif %}
+</form>
+
 <div class="table-responsive">
   <table class="dashboard-table">
     <thead>
-      <tr><th>Name</th><th>Category</th><th>Price</th><th>Stock</th><th>Available</th><th>Actions</th></tr>
+      <tr><th></th><th>Name</th><th>Category</th><th>Price</th><th>Stock</th><th>Available</th><th>Actions</th></tr>
     </thead>
     <tbody>
       {% for product in products %}
       <tr>
+        <td>
+          {% if product.image %}
+            <img src="{{ product.image.url }}" alt="" class="dashboard-thumb">
+          {% else %}
+            <span class="thumb-placeholder sm cat-{{ product.category.slug }}">{{ product.name|first|upper }}</span>
+          {% endif %}
+        </td>
         <td>{{ product.name }}</td>
         <td>{{ product.category.name }}</td>
         <td>₱{{ product.price }}</td>
@@ -22,14 +35,11 @@
         <td>{{ product.available|yesno:"Yes,No" }}</td>
         <td>
           <a href="{% url 'dashboard:dashboard_product_edit' product.id %}" class="btn btn-sm btn-outline">Edit</a>
-          <form method="post" action="{% url 'dashboard:dashboard_product_delete' product.id %}" style="display:inline;">
-            {% csrf_token %}
-            <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Delete {{ product.name }}?')">Delete</button>
-          </form>
+          <a href="{% url 'dashboard:dashboard_product_delete' product.id %}" class="btn btn-sm btn-danger">Delete</a>
         </td>
       </tr>
       {% empty %}
-      <tr><td colspan="6" style="text-align:center;color:var(--gray-500);">No products yet.</td></tr>
+      <tr><td colspan="7" style="text-align:center;color:var(--gray-500);">No products yet.</td></tr>
       {% endfor %}
     </tbody>
   </table>

@@ -12,21 +12,29 @@ def cart_detail(request):
 def cart_add(request, product_id):
     product = get_object_or_404(Product, id=product_id, available=True)
     cart = Cart(request)
-    cart.add(product)
+    quantity = 1
+    if request.method == 'POST':
+        try:
+            quantity = int(request.POST.get('quantity', 1))
+        except (TypeError, ValueError):
+            pass
+    if quantity > product.stock:
+        messages.error(request, f'Only {product.stock} in stock.')
+        return redirect(request.META.get('HTTP_REFERER', 'catalog:product_list'))
+    cart.add(product, quantity)
     messages.success(request, f'{product.name} added to cart.')
     return redirect(request.META.get('HTTP_REFERER', 'catalog:product_list'))
 
 
 def cart_remove(request, product_id):
-    product = get_object_or_404(Product, id=product_id)
     cart = Cart(request)
-    cart.remove(product)
+    cart.remove(str(product_id))
     messages.success(request, 'Item removed from cart.')
     return redirect('cart:cart_detail')
 
 
 def cart_update(request, product_id):
-    product = get_object_or_404(Product, id=product_id)
+    product = get_object_or_404(Product, id=product_id, available=True)
     cart = Cart(request)
     try:
         quantity = int(request.POST.get('quantity', 1))

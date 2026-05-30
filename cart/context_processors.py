@@ -1,6 +1,4 @@
-from .cart import Cart
-
-
 def cart_count(request):
-    cart = Cart(request)
-    return {'cart_count': len(cart)}
+    cart = request.session.get('cart', {})
+    count = sum(item.get('quantity', 0) for item in cart.values())
+    return {'cart_count': count}

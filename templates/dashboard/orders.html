@@ -3,6 +3,20 @@
 
 {% block dashboard_content %}
 <h1>Orders</h1>
+
+<form method="get" style="margin-bottom:16px;display:flex;gap:8px;max-width:400px;">
+  <select name="status" style="flex:1;padding:8px 14px;border:2px solid var(--gray-200);border-radius:var(--radius-sm);font-size:0.9rem;">
+    <option value="">All Statuses</option>
+    {% with status_choices=orders.0.STATUS_CHOICES|default:order_status_choices %}
+    {% for key, label in status_choices %}
+      <option value="{{ key }}" {% if status_filter == key %}selected{% endif %}>{{ label }}</option>
+    {% endfor %}
+    {% endwith %}
+  </select>
+  <button type="submit" class="btn btn-sm btn-primary">Filter</button>
+  {% if status_filter %}<a href="{% url 'dashboard:dashboard_orders' %}" class="btn btn-sm btn-outline">Clear</a>{% endif %}
+</form>
+
 <div class="table-responsive">
   <table class="dashboard-table">
     <thead>

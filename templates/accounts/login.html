@@ -4,9 +4,24 @@
 {% block content %}
 <div class="form-page">
   <h1>Login</h1>
-  <form method="post" class="form-card">
+  <form method="post" class="form-card" novalidate>
     {% csrf_token %}
-    {{ form.as_p }}
+    {% if form.non_field_errors %}
+      <div class="form-errors">
+        {% for err in form.non_field_errors %}
+          <p class="error-msg">{{ err }}</p>
+        {% endfor %}
+      </div>
+    {% endif %}
+    {% for field in form %}
+    <p{% if field.errors %} class="has-error"{% endif %}>
+      <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+      {{ field }}
+      {% if field.errors %}
+      <span class="error-msg" style="display:block;margin-top:2px;">{{ field.errors.0 }}</span>
+      {% endif %}
+    </p>
+    {% endfor %}
     <button type="submit" class="btn btn-primary">Login</button>
   </form>
   <p class="form-footer">

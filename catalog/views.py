@@ -1,4 +1,5 @@
 from django.shortcuts import render, get_object_or_404
+from django.db.models import Q
 from django.http import Http404
 from .models import Category, Product
 
@@ -22,7 +23,9 @@ def product_list(request, category_slug=None):
         products = products.filter(category=category)
 
     if query:
-        products = products.filter(name__icontains=query)
+        products = products.filter(
+            Q(name__icontains=query) | Q(description__icontains=query)
+        )
 
     return render(request, 'catalog/product_list.html', {
         'category': category,

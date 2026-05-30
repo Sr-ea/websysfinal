@@ -34,19 +34,31 @@
       {% if product.image %}
         <img src="{{ product.image.url }}" alt="{{ product.name }}">
       {% else %}
-        <div class="placeholder-icon">📦</div>
+        {% with first_char=product.name|first|upper %}
+        <div class="initials-placeholder cat-{{ product.category.slug }}">{{ first_char }}</div>
+        {% endwith %}
       {% endif %}
     </div>
     <div class="info">
       <span class="category-tag">{{ product.category.name }}</span>
       <h3><a href="{% url 'catalog:product_detail' product.id %}">{{ product.name }}</a></h3>
       <span class="price">₱{{ product.price }}</span>
-      {% if product.stock > 0 %}
-        <span class="stock-badge">In Stock ({{ product.stock }})</span>
+      {% if product.stock == 0 %}
+        <span class="stock-badge stock-out">Out of Stock</span>
+      {% elif product.stock < 5 %}
+        <span class="stock-badge stock-low">Only {{ product.stock }} left</span>
+      {% elif product.stock < 11 %}
+        <span class="stock-badge stock-medium">{{ product.stock }} in stock</span>
       {% else %}
-        <span class="stock-badge out">Out of Stock</span>
+        <span class="stock-badge stock-high">In Stock ({{ product.stock }})</span>
       {% endif %}
-      <a href="{% url 'cart:cart_add' product.id %}" class="btn btn-cart">Add to Cart</a>
+      {% if product.stock > 0 %}
+      <form method="post" action="{% url 'cart:cart_add' product.id %}" class="qty-add-form">
+        {% csrf_token %}
+        <input type="number" name="quantity" value="1" min="1" max="{{ product.stock }}" class="qty-input">
+        <button type="submit" class="btn btn-cart">Add to Cart</button>
+      </form>
+      {% endif %}
     </div>
   </div>
   {% endfor %}

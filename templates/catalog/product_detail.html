@@ -8,7 +8,9 @@
     {% if product.image %}
       <img src="{{ product.image.url }}" alt="{{ product.name }}">
     {% else %}
-      <div style="font-size:5rem;opacity:0.3;">📦</div>
+      {% with first_char=product.name|first|upper %}
+      <div class="initials-placeholder cat-{{ product.category.slug }}" style="font-size:5rem;">{{ first_char }}</div>
+      {% endwith %}
     {% endif %}
   </div>
   <div class="detail-info">
@@ -16,12 +18,24 @@
     <h1>{{ product.name }}</h1>
     <div class="price-lg">₱{{ product.price }}</div>
     <p class="description">{{ product.description|default:"No description available." }}</p>
-    {% if product.stock > 0 %}
-      <p class="stock-info in">&#10003; In Stock ({{ product.stock }} available)</p>
+    {% if product.stock == 0 %}
+      <p class="stock-info stock-out" style="margin-bottom:20px;">&#10007; Out of Stock</p>
+    {% elif product.stock < 5 %}
+      <p class="stock-info stock-low" style="margin-bottom:20px;">&#9888; Only {{ product.stock }} left in stock</p>
+    {% elif product.stock < 11 %}
+      <p class="stock-info stock-medium" style="margin-bottom:20px;">{{ product.stock }} in stock</p>
     {% else %}
-      <p class="stock-info out">&#10007; Out of Stock</p>
+      <p class="stock-info stock-high" style="margin-bottom:20px;">&#10003; In Stock ({{ product.stock }} available)</p>
     {% endif %}
-    <a href="{% url 'cart:cart_add' product.id %}" class="btn btn-cart" style="max-width:250px;">Add to Cart</a>
+    {% if product.stock > 0 %}
+    <form method="post" action="{% url 'cart:cart_add' product.id %}" class="qty-add-form" style="max-width:250px;">
+      {% csrf_token %}
+      <div style="display:flex;gap:8px;">
+        <input type="number" name="quantity" value="1" min="1" max="{{ product.stock }}" class="qty-input" style="width:70px;">
+        <button type="submit" class="btn btn-cart" style="margin-top:0;">Add to Cart</button>
+      </div>
+    </form>
+    {% endif %}
   </div>
 </div>
 
@@ -34,7 +48,9 @@
       {% if p.image %}
         <img src="{{ p.image.url }}" alt="{{ p.name }}">
       {% else %}
-        <div class="placeholder-icon">📦</div>
+        {% with first_char=p.name|first|upper %}
+        <div class="initials-placeholder cat-{{ p.category.slug }}">{{ first_char }}</div>
+        {% endwith %}
       {% endif %}
     </div>
     <div class="info">
