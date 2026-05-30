@@ -57,4 +57,5 @@ class Cart:
 
     def clear(self):
         del self.session['cart']
+        self.cart = {}
         self.save()

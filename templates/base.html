@@ -6,6 +6,15 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>{% block title %}7-Evelyn{% endblock %} | 7-Evelyn</title>
   <link rel="stylesheet" href="{% static 'css/market.css' %}">
+  <script>
+    (function() {
+      var theme = localStorage.getItem('theme');
+      if (!theme) {
+        theme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+      }
+      document.documentElement.setAttribute('data-theme', theme);
+    })();
+  </script>
 </head>
 <body>
   <a href="#main-content" class="skip-link">Skip to content</a>
@@ -16,11 +25,11 @@
       </a>
       <button class="nav-toggle" aria-label="Toggle menu">&#9776;</button>
       <ul class="navbar-nav">
-        <li><a href="{% url 'catalog:product_list' %}"{% if request.path == '/' %} class="active"{% endif %}>Home</a></li>
+        <li><a href="{% url 'catalog:product_list' %}">Home</a></li>
+        <li><a href="{% url 'cart:cart_detail' %}">
+          Cart {% if cart_count %}<span class="badge-cart">{{ cart_count }}</span>{% endif %}
+        </a></li>
         {% if user.is_authenticated %}
-          <li><a href="{% url 'cart:cart_detail' %}">
-            Cart {% if cart_count %}<span class="badge-cart">{{ cart_count }}</span>{% endif %}
-          </a></li>
           <li><a href="{% url 'orders:order_history' %}">Orders</a></li>
           {% if user.is_staff %}
             <li><a href="{% url 'dashboard:dashboard_home' %}">Admin</a></li>
@@ -37,6 +46,7 @@
             <a href="{% url 'register' %}">Register</a>
           </li>
         {% endif %}
+        <li class="nav-theme"><button class="theme-toggle" aria-label="Toggle theme">🌙</button></li>
       </ul>
     </div>
   </nav>
@@ -55,6 +65,59 @@
   <main id="main-content">
     {% block content %}{% endblock %}
   </main>
+
+  <!-- Remove confirmation modal -->
+  <div id="removeModal" class="modal-overlay">
+    <div class="modal">
+      <div class="modal-header">
+        <h3>Remove Item?</h3>
+        <button class="modal-close" data-close-modal>&times;</button>
+      </div>
+      <div class="modal-body">
+        <p style="color:var(--gray-700);margin-bottom:8px;">Are you sure you want to remove this item?</p>
+        <div class="remove-item-info">
+          <div id="removeItemIcon" class="icon-box">📦</div>
+          <h4 id="removeItemName"></h4>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-outline" data-close-modal>Cancel</button>
+        <a href="#" id="removeConfirmBtn" class="btn btn-danger">Remove</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Add to cart modal -->
+  <div id="addCartModal" class="modal-overlay">
+    <div class="modal">
+      <div class="modal-header">
+        <h3>Add to Cart</h3>
+        <button class="modal-close" data-close-modal>&times;</button>
+      </div>
+      <form id="addCartForm" method="post">
+        {% csrf_token %}
+        <div class="modal-body">
+          <div class="add-cart-product">
+            <div id="addCartImgWrap" class="icon-box" style="width:80px;height:80px;font-size:2rem;">📦</div>
+            <div class="info">
+              <h4 id="addCartName"></h4>
+              <div class="price" id="addCartPrice"></div>
+            </div>
+          </div>
+          <label style="display:block;font-weight:600;font-size:0.9rem;color:var(--gray-700);margin-bottom:8px;">Quantity</label>
+          <div class="qty-selector">
+            <button type="button" class="qty-btn" data-qty-minus>&minus;</button>
+            <input type="number" name="quantity" id="addCartQty" value="1" min="1">
+            <button type="button" class="qty-btn" data-qty-plus>+</button>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-outline" data-close-modal>Cancel</button>
+          <button type="submit" class="btn btn-cart">Add to Cart</button>
+        </div>
+      </form>
+    </div>
+  </div>
 
   <footer class="footer">
     <div class="container">
@@ -86,6 +149,113 @@
             msg.style.opacity = '0';
             setTimeout(function() { msg.remove(); }, 300);
           }
+        });
+      });
+      var themeBtn = document.querySelector('.theme-toggle');
+      if (themeBtn) {
+        themeBtn.textContent = document.documentElement.getAttribute('data-theme') === 'dark' ? '\u2600\uFE0F' : '\uD83C\uDF19';
+        themeBtn.addEventListener('click', function() {
+          var current = document.documentElement.getAttribute('data-theme');
+          var next = current === 'dark' ? 'light' : 'dark';
+          document.documentElement.setAttribute('data-theme', next);
+          localStorage.setItem('theme', next);
+          themeBtn.textContent = next === 'dark' ? '\u2600\uFE0F' : '\uD83C\uDF19';
+        });
+      }
+
+      /* ===== Modals ===== */
+      function openModal(id) {
+        var el = document.getElementById(id);
+        if (el) el.classList.add('open');
+      }
+      function closeModals() {
+        document.querySelectorAll('.modal-overlay').forEach(function(m) {
+          m.classList.remove('open');
+        });
+      }
+      document.querySelectorAll('[data-close-modal]').forEach(function(btn) {
+        btn.addEventListener('click', closeModals);
+      });
+      document.querySelectorAll('.modal-overlay').forEach(function(overlay) {
+        overlay.addEventListener('click', function(e) {
+          if (e.target === overlay) closeModals();
+        });
+      });
+      document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') closeModals();
+      });
+
+      /* Remove modal */
+      document.querySelectorAll('[data-remove-item]').forEach(function(btn) {
+        btn.addEventListener('click', function(e) {
+          e.preventDefault();
+          document.getElementById('removeItemName').textContent = btn.dataset.itemName;
+          var icon = document.getElementById('removeItemIcon');
+          if (btn.dataset.itemImg) {
+            icon.innerHTML = '<img src="' + btn.dataset.itemImg + '" alt="" style="width:56px;height:56px;object-fit:cover;border-radius:var(--radius-sm);">';
+          } else {
+            icon.innerHTML = '\uD83D\uDCE6';
+            icon.className = 'icon-box';
+          }
+          document.getElementById('removeConfirmBtn').href = btn.href;
+          openModal('removeModal');
+        });
+      });
+
+      /* Add to cart modal */
+      document.querySelectorAll('[data-add-cart]').forEach(function(btn) {
+        btn.addEventListener('click', function(e) {
+          e.preventDefault();
+          var form = document.getElementById('addCartForm');
+          form.action = btn.href;
+          document.getElementById('addCartName').textContent = btn.dataset.productName;
+          document.getElementById('addCartPrice').textContent = '\u20B1' + btn.dataset.productPrice;
+          var maxStock = parseInt(btn.dataset.productStock, 10) || 99;
+          var qtyInput = document.getElementById('addCartQty');
+          qtyInput.value = 1;
+          qtyInput.max = maxStock;
+          var imgWrap = document.getElementById('addCartImgWrap');
+          if (btn.dataset.productImg) {
+            imgWrap.innerHTML = '<img src="' + btn.dataset.productImg + '" alt="" style="width:80px;height:80px;object-fit:cover;border-radius:var(--radius-sm);">';
+          } else {
+            imgWrap.innerHTML = '\uD83D\uDCE6';
+          }
+          openModal('addCartModal');
+        });
+      });
+
+      /* Quantity +/- buttons */
+      document.querySelectorAll('[data-qty-plus]').forEach(function(btn) {
+        btn.addEventListener('click', function() {
+          var input = this.parentElement.querySelector('input');
+          var max = parseInt(input.max, 10) || 999;
+          var val = parseInt(input.value, 10) || 1;
+          if (val < max) {
+            input.value = val + 1;
+            var form = input.closest('[data-cart-qty-form]');
+            if (form) form.submit();
+          }
+        });
+      });
+      document.querySelectorAll('[data-qty-minus]').forEach(function(btn) {
+        btn.addEventListener('click', function() {
+          var input = this.parentElement.querySelector('input');
+          var val = parseInt(input.value, 10) || 1;
+          if (val > 1) {
+            input.value = val - 1;
+            var form = input.closest('[data-cart-qty-form]');
+            if (form) form.submit();
+          }
+        });
+      });
+      document.querySelectorAll('.qty-selector input').forEach(function(input) {
+        input.addEventListener('change', function() {
+          var val = parseInt(this.value, 10);
+          var max = parseInt(this.max, 10);
+          if (isNaN(val) || val < 1) this.value = 1;
+          if (val > max) this.value = max;
+          var form = input.closest('[data-cart-qty-form]');
+          if (form) form.submit();
         });
       });
     });

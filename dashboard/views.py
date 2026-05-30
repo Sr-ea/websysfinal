@@ -42,7 +42,6 @@ def dashboard_products(request):
 
 @staff_member_required
 def dashboard_product_add(request):
-    categories = Category.objects.all()
     if request.method == 'POST':
         form = ProductForm(request.POST, request.FILES)
         if form.is_valid():
@@ -53,13 +52,12 @@ def dashboard_product_add(request):
     else:
         form = ProductForm()
 
-    return render(request, 'dashboard/product_form.html', {'categories': categories, 'product': None, 'form': form})
+    return render(request, 'dashboard/product_form.html', {'product': None, 'form': form})
 
 
 @staff_member_required
 def dashboard_product_edit(request, product_id):
     product = get_object_or_404(Product, id=product_id)
-    categories = Category.objects.all()
     if request.method == 'POST':
         form = ProductForm(request.POST, request.FILES, instance=product)
         if form.is_valid():
@@ -70,7 +68,7 @@ def dashboard_product_edit(request, product_id):
     else:
         form = ProductForm(instance=product)
 
-    return render(request, 'dashboard/product_form.html', {'categories': categories, 'product': product, 'form': form})
+    return render(request, 'dashboard/product_form.html', {'product': product, 'form': form})
 
 
 @staff_member_required

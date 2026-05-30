@@ -73,6 +73,31 @@
 - Stats cards: white, centered number + label
 - Tables: white, striped hover rows
 
+## Dark Mode
+
+The site includes a fully supported dark mode toggle (🌙/☀️) in the navbar. Preference is persisted via `localStorage` and falls back to the OS `prefers-color-scheme` setting. The `<html>` element gets `data-theme="dark"` when active.
+
+### Overridden Variables (`[data-theme="dark"]`)
+- `--cream` — `#121212` (page background)
+- `--white` — `#1e1e1e` (card backgrounds)
+- `--gray-100` — `#2a2a2a`
+- `--gray-200` — `#333333`
+- `--gray-300` — `#444444`
+- `--gray-500` — `#999999`
+- `--gray-700` — `#cccccc`
+- `--gray-900` — `#e0e0e0`
+- `--shadow-sm` / `--shadow-md` — Darker shadow values
+
+### Elements forced to `#ffffff` in dark mode
+- Navbar brand ("7-Evelyn")
+- Hero title and orange-accented span
+- Section titles ("All Products")
+- Category pill text on hover/active
+
+### Category pills in dark mode
+- **Default:** White background (`#f8f9fa`), black text (`#212529`) — same as light mode
+- **Hover/Active:** Green background (`var(--green-700)`), white text
+
 ## Responsive
 - **Desktop:** 3-4 column product grid
 - **Tablet:** 2-column grid, stacked checkout
